@@ -21,7 +21,7 @@
 
 ESP8266WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
-String filename;
+String uploadfilename;
 File fsUploadFile;
 char resetflag=0;
 uint8_t wsNum;
@@ -49,7 +49,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
       if (payload[0]=='R') resetflag=payload[1];
       if (payload[0]=='F' && payload[1]=='L') {
         Serial.println("[flash]");
-        PicFlash(filename);
+        PicFlash(uploadfilename);
       }
       break;
     case WStype_BIN:
@@ -72,16 +72,16 @@ void handleFileUpload() {
   HTTPUpload& upload = server.upload();
   if(upload.status == UPLOAD_FILE_START){
     bytesSoFar=0;
-    filename = upload.filename;
-    sprintf(tmps,"f%s",filename.c_str());
+    uploadfilename = upload.filename;
+    sprintf(tmps,"f%s",uploadfilename.c_str());
     webSocket.sendTXT(wsNum, tmps);
     sprintf(tmps,"s%d/%d bytes uploaded",bytesSoFar,upload.totalSize);
     webSocket.sendTXT(wsNum, tmps);
     webSocket.sendTXT(wsNum, "pUploading file");
-    if (filename.endsWith(".hex")) filename = "/hex/"+filename;
-    else filename="/"+filename;
-    Serial.printf("Receiving file %s\n",filename.c_str()); 
-    fsUploadFile = SPIFFS.open(filename, "w");
+    if (uploadfilename.endsWith(".hex")) uploadfilename = "/hex/"+uploadfilename;
+    else uploadfilename="/"+uploadfilename;
+    Serial.printf("Receiving file %s\n",uploadfilename.c_str()); 
+    fsUploadFile = SPIFFS.open(uploadfilename, "w");
   }
   else if(upload.status == UPLOAD_FILE_WRITE){
     if(fsUploadFile) {
@@ -97,24 +97,24 @@ void handleFileUpload() {
     Serial.println("Success");
     webSocket.sendTXT(wsNum, "pFile uploaded" );
     delay(250);
-    PicFlash(filename);
+    PicFlash(uploadfilename);
   }
 }
 
-String getContentType(String filename){
+String getContentType(String uploadfilename){
   if(server.hasArg("download")) return "application/octet-stream";
-  else if(filename.endsWith(".htm")) return "text/html";
-  else if(filename.endsWith(".html")) return "text/html";
-  else if(filename.endsWith(".css")) return "text/css";
-  else if(filename.endsWith(".js")) return "application/javascript";
-  else if(filename.endsWith(".png")) return "image/png";
-  else if(filename.endsWith(".gif")) return "image/gif";
-  else if(filename.endsWith(".jpg")) return "image/jpeg";
-  else if(filename.endsWith(".ico")) return "image/x-icon";
-  else if(filename.endsWith(".xml")) return "text/xml";
-  else if(filename.endsWith(".pdf")) return "application/x-pdf";
-  else if(filename.endsWith(".zip")) return "application/x-zip";
-  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  else if(uploadfilename.endsWith(".htm")) return "text/html";
+  else if(uploadfilename.endsWith(".html")) return "text/html";
+  else if(uploadfilename.endsWith(".css")) return "text/css";
+  else if(uploadfilename.endsWith(".js")) return "application/javascript";
+  else if(uploadfilename.endsWith(".png")) return "image/png";
+  else if(uploadfilename.endsWith(".gif")) return "image/gif";
+  else if(uploadfilename.endsWith(".jpg")) return "image/jpeg";
+  else if(uploadfilename.endsWith(".ico")) return "image/x-icon";
+  else if(uploadfilename.endsWith(".xml")) return "text/xml";
+  else if(uploadfilename.endsWith(".pdf")) return "application/x-pdf";
+  else if(uploadfilename.endsWith(".zip")) return "application/x-zip";
+  else if(uploadfilename.endsWith(".gz")) return "application/x-gzip";
   return "text/plain";
 }
 
@@ -243,7 +243,7 @@ void setup() {
 
   server.on("/flash", HTTP_GET, []() {
     Serial.println("HTTP_GET /flash");
-    PicFlash(filename);
+    PicFlash(uploadfilename);
     char *html=(char *)malloc(10000);
     strcpy(html,"<h1>FLASH DONE</h1><a href=\"/\">Back</a>");
     server.send(200, "text/html", html);
@@ -272,4 +272,3 @@ void loop(void) {
     resetflag=0;
   }
 }
-
