@@ -13,24 +13,25 @@
 #define DLY2  10000   // 10  millisecond for command delay
 
 #define PIN_RESET D0
-#define PIN_DAT   D1
+#define PIN_DAT_TX   D1
 #define PIN_CLK   D2
+#define PIN_DAT_RX   D3
 
-#define DAT_INPUT   pinMode(PIN_DAT, INPUT);
-#define DAT_OUTPUT  pinMode(PIN_DAT, OUTPUT);
-#define DAT_LOW     digitalWrite(PIN_DAT,   LOW)
-#define DAT_HIGH    digitalWrite(PIN_DAT,   HIGH)
-#define DAT_GET     digitalRead(PIN_DAT)
+#define DAT_OUTPUT  pinMode(PIN_DAT_TX, OUTPUT); DAT_LOW
+#define DAT_LOW     digitalWrite(PIN_DAT_TX,   LOW)
+#define DAT_HIGH    digitalWrite(PIN_DAT_TX,   HIGH)
+#define DAT_INPUT   DAT_HIGH; pinMode(PIN_DAT_RX, INPUT)
+#define DAT_GET     digitalRead(PIN_DAT_RX)
 
-#define CLK_INPUT   pinMode(PIN_CLK, INPUT);
-#define CLK_OUTPUT  pinMode(PIN_CLK, OUTPUT);
+#define CLK_INPUT   pinMode(PIN_CLK, INPUT)
+#define CLK_OUTPUT  pinMode(PIN_CLK, OUTPUT)
 #define CLK_LOW     digitalWrite(PIN_CLK,   LOW)
 #define CLK_HIGH    digitalWrite(PIN_CLK,   HIGH)
 
-#define RESET_INPUT  pinMode(PIN_RESET, INPUT);
-#define RESET_OUTPUT pinMode(PIN_RESET, OUTPUT);
-void RESET_LOW(){   digitalWrite(PIN_RESET, LOW);}
-void RESET_HIGH(){  digitalWrite(PIN_RESET, HIGH);}
+#define RESET_INPUT  pinMode(PIN_RESET, INPUT)
+#define RESET_OUTPUT pinMode(PIN_RESET, OUTPUT)
+void RESET_LOW() { digitalWrite(PIN_RESET, LOW); }
+void RESET_HIGH() { digitalWrite(PIN_RESET, HIGH); }
 
 
 uint16_t currentAddress;
@@ -42,9 +43,11 @@ uint16_t currentAddress;
 void PicSetup() {
   RESET_OUTPUT;
   DAT_INPUT;
+  DAT_OUTPUT;
   CLK_INPUT;
   // pinMode(PIN_RESET, OUTPUT);
-  // pinMode(PIN_DAT,   OUTPUT);
+  // pinMode(PIN_DAT_RX,   INPUT);
+  // pinMode(PIN_DAT_TX,   OUTPUT);
   // pinMode(PIN_CLK,   OUTPUT);
   RESET_HIGH();
   // DAT_LOW;
@@ -352,4 +355,3 @@ void PicReset(char type) {
       RESET_HIGH();
   }
 }
-
