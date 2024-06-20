@@ -61,15 +61,13 @@ void ConnectToWifi() {
   });
   server.on("/", []() {
         String content = "<!DOCTYPE HTML><html><pre>ESP8266 Setup\n-------------\n";
-        content += "<form method='POST' action=''>SSID:    <input name='ssid' value='Abstract85_2.4G' />\nPassword:<input name='pw' value='0863636870' />\n<input type='submit' /></form></pre>";
+        content += "<form method='POST' action=''>SSID:    <input name='ssid' value='WirelessNet' />\nPassword:<input name='pw' value='wifipass1234' />\n<input type='submit' /></form></pre>";
         content += "</html>";
         server.send(200, "text/html", content);  
   });
-  server.begin();
-  while (1) {
-    server.handleClient();
-    delay(1);
-  }
+//   server.begin();
+//   while (1) {
+//     server.handleClient();
+//     delay(1);
+//   }
 }
-
-
