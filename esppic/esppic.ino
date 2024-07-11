@@ -259,7 +259,7 @@ void setup() {
 
 
 //
-// Just loop the webserver & websocket handlers continously...
+// Just loop the webserver & websocket handlers continuously...
 //
 void loop(void) {
   server.handleClient();
